@@ -90,3 +90,20 @@ exports.getMyPosts = async (req, res) => {
         res.status(500).json({ success: false, message: 'Lỗi Server' });
     }
 };
+
+// --- 4. LẤY CHI TIẾT 1 BÀI ĐĂNG (MỚI) ---
+// [GET] /api/posts/:id
+exports.getPostById = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id)
+            .populate('user', 'username phone email'); // Lấy cả thông tin chủ nhà
+
+        if (!post) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy bài đăng' });
+        }
+
+        res.status(200).json({ success: true, data: post });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Lỗi Server' });
+    }
+};

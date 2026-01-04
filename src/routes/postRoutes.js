@@ -1,18 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const { createPost, getAllPosts, getMyPosts } = require('../controllers/postController');
+
+// 1. IMPORT getPostById
+const { 
+    createPost, 
+    getAllPosts, 
+    getMyPosts, 
+    getPostById  
+} = require('../controllers/postController');
 
 // Import Middleware
-const { protect } = require('../middleware/authMiddleware'); // Kiểm tra đăng nhập
-const validatePost = require('../middleware/validationMiddleware'); // Kiểm tra dữ liệu đầu vào
+const { protect } = require('../middleware/authMiddleware'); 
+const validatePost = require('../middleware/validationMiddleware'); 
 
-// 1. Đường dẫn công khai
+// --- ĐỊNH NGHĨA ROUTES ---
+
+// 1. Lấy tất cả tin (Công khai)
 router.get('/', getAllPosts); 
 
-// 2. Đường dẫn bảo mật (Phải đăng nhập)
+// 2. Lấy tin của tôi (Bảo mật) -> QUAN TRỌNG: Phải đặt dòng này TRƯỚC dòng /:id
+// Nếu đặt sau, chữ "my-posts" sẽ bị hiểu nhầm là một cái ID
 router.get('/my-posts', protect, getMyPosts);
 
-// 3. Đăng tin: Thêm 'validatePost' vào giữa để kiểm tra dữ liệu trước khi xử lý
+// 3. Lấy chi tiết 1 tin theo ID (Công khai) 
+router.get('/:id', getPostById); 
+
+// 4. Đăng tin mới (Bảo mật + Validate)
 router.post('/', protect, validatePost, createPost); 
 
 module.exports = router;
