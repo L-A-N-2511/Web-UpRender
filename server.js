@@ -9,7 +9,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // 2. Middleware (Thứ tự quan trọng)
 app.use(cors()); // Cho phép Frontend gọi API
