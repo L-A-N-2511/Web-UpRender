@@ -1,31 +1,37 @@
 const express = require('express');
 const router = express.Router();
 
-// 1. IMPORT getPostById
+// 1. IMPORT CÁC HÀM TỪ CONTROLLER
+// Nhớ thêm 'deletePost' vào danh sách này
 const { 
     createPost, 
     getAllPosts, 
     getMyPosts, 
-    getPostById  
+    getPostById,
+    deletePost   
 } = require('../controllers/postController');
 
-// Import Middleware
+// 2. IMPORT MIDDLEWARE BẢO VỆ
 const { protect } = require('../middleware/authMiddleware'); 
 const validatePost = require('../middleware/validationMiddleware'); 
 
-// --- ĐỊNH NGHĨA ROUTES ---
+// --- ĐỊNH NGHĨA CÁC ĐƯỜNG DẪN (ROUTES) ---
 
-// 1. Lấy tất cả tin (Công khai)
+// A. Lấy tất cả tin (Công khai - Ai cũng xem được)
 router.get('/', getAllPosts); 
 
-// 2. Lấy tin của tôi (Bảo mật) -> QUAN TRỌNG: Phải đặt dòng này TRƯỚC dòng /:id
-// Nếu đặt sau, chữ "my-posts" sẽ bị hiểu nhầm là một cái ID
+// B. Lấy tin của tôi (Bảo mật - Phải đăng nhập)
+// QUAN TRỌNG: Phải đặt dòng này TRƯỚC dòng /:id để tránh nhầm lẫn
 router.get('/my-posts', protect, getMyPosts);
 
-// 3. Lấy chi tiết 1 tin theo ID (Công khai) 
+// C. Lấy chi tiết 1 tin theo ID (Công khai)
 router.get('/:id', getPostById); 
 
-// 4. Đăng tin mới (Bảo mật + Validate)
+// D. Đăng tin mới (Bảo mật + Kiểm tra dữ liệu)
 router.post('/', protect, validatePost, createPost); 
+
+// E. Xóa bài đăng (Bảo mật - Chỉ chủ bài đăng mới xóa được)
+
+router.delete('/:id', protect, deletePost); 
 
 module.exports = router;

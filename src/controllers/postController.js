@@ -107,3 +107,26 @@ exports.getPostById = async (req, res) => {
         res.status(500).json({ success: false, message: 'Lỗi Server' });
     }
 };
+
+// --- 5. XÓA BÀI ĐĂNG ---
+// [DELETE] /api/posts/:id
+exports.deletePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+
+        if (!post) {
+            return res.status(404).json({ success: false, message: 'Bài đăng không tồn tại' });
+        }
+
+        // QUAN TRỌNG: Kiểm tra xem người đang xóa có phải chủ bài đăng không?
+        if (post.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ success: false, message: 'Bạn không có quyền xóa bài này!' });
+        }
+
+        await post.deleteOne(); // Xóa khỏi DB
+
+        res.status(200).json({ success: true, message: 'Đã xóa bài đăng thành công' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Lỗi Server: ' + error.message });
+    }
+};
