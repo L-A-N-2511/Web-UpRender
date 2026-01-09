@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 // 1. IMPORT CÁC HÀM TỪ CONTROLLER
-// Nhớ thêm 'deletePost' vào danh sách này
 const { 
     createPost, 
     getAllPosts, 

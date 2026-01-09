@@ -46,12 +46,14 @@ exports.createPost = async (req, res) => {
 };
 
 // --- 2. LẤY TẤT CẢ TIN (Cho trang chủ) ---
-// [GET] /api/posts
+// [GET] /api/posts gọi vào hàm GET nên không thể xóa 
 exports.getAllPosts = async (req, res) => {
     try {
         // Lấy bộ lọc từ query params (Ví dụ: ?city=Hà Nội&district=Cầu Giấy)
         const { city, district, ward } = req.query;
-        
+        //(chỉ lấy trong query từ frontend gửi lên các biến city, district, ward  )
+        // => nếu quẻy này là một đoạn mã muốn xóa database thì sẽ không được thực hiện 
+
         // Xây dựng điều kiện tìm kiếm
         let query = {};
         if (city) query.location_city = city;
@@ -60,7 +62,7 @@ exports.getAllPosts = async (req, res) => {
 
         // Tìm trong DB, sắp xếp tin mới nhất lên đầu
         // .populate('user', 'username phone') -> Giúp lấy luôn tên và sđt người đăng
-        const posts = await Post.find(query)
+        const posts = await Post.find(query)// Hàm .find() cũng chỉ phục vụ tìm kiếm nên không lo chạy mã đọc xóa database
             .sort({ createdAt: -1 }) 
             .populate('user', 'username phone email'); 
 
@@ -74,6 +76,8 @@ exports.getAllPosts = async (req, res) => {
         res.status(500).json({ success: false, message: 'Lỗi lấy danh sách: ' + error.message });
     }
 };
+//Kết luận không lo hàm fetchPosts(query) từ phía frontend gửi lên bị sửa thành mã độc và thực thi mã độc
+//Vì ngay từ đầu thứ query đi và là hàm GET
 
 // --- 3. LẤY TIN CỦA TÔI (Để quản lý) ---
 // [GET] /api/posts/my-posts
